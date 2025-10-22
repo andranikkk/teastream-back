@@ -1,4 +1,5 @@
 import {
+	ConflictException,
 	Injectable,
 	InternalServerErrorException,
 	NotFoundException,
@@ -125,5 +126,26 @@ export class SessionService {
 				resolve(true)
 			})
 		})
+	}
+
+	// eslint-disable-next-line @typescript-eslint/require-await
+	public async clearSession(req: Request) {
+		req.res.clearCookie(
+			this.configService.getOrThrow<string>('SESSION_NAME')
+		)
+
+		return true
+	}
+
+	public async remove(req: Request, id: string) {
+		if (req.session.id === id) {
+			throw new ConflictException('Cannot remove current active session')
+		}
+
+		await this.redisService.del(
+			`${this.configService.getOrThrow<string>('SESSION_FOLDER')}:${id}`
+		)
+
+		return true
 	}
 }
