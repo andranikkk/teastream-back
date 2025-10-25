@@ -7,6 +7,8 @@ import { Request } from 'express'
 
 import { TokenType } from '@/prisma/generated'
 import { PrismaService } from '@/src/core/prisma/prisma.service'
+import { getSessionMetadata } from '@/src/shared/utils/session-metadata.util'
+import { saveSession } from '@/src/shared/utils/session.util'
 
 import { MailService } from '../../libs/mail/mail.service'
 
@@ -56,5 +58,9 @@ export class VerificationService {
 				type: TokenType.EMAIL_VERIFY
 			}
 		})
+
+		const metadata = getSessionMetadata(req, userAgent)
+
+		return saveSession(req, user, metadata)
 	}
 }
