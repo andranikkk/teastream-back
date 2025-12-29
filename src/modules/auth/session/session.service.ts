@@ -1,6 +1,8 @@
 import {
+	// BadRequestException,
 	ConflictException,
 	Injectable,
+	InternalServerErrorException,
 	NotFoundException,
 	UnauthorizedException
 } from '@nestjs/common'
@@ -13,6 +15,8 @@ import { RedisService } from '@/src/core/redis/redis.service'
 import { getSessionMetadata } from '@/src/shared/utils/session-metadata.util'
 import { destroySession, saveSession } from '@/src/shared/utils/session.util'
 
+import { VerificationService } from '../verification/verification.service'
+
 import { LoginInput } from './inputs/login.input'
 
 @Injectable()
@@ -20,7 +24,8 @@ export class SessionService {
 	public constructor(
 		private readonly prismaService: PrismaService,
 		private readonly configService: ConfigService,
-		private readonly redisService: RedisService
+		private readonly redisService: RedisService,
+		private readonly verificationService: VerificationService /** => NOTE: Email verification is currently disabled */
 	) {}
 
 	public async findByUser(req: Request) {
@@ -88,9 +93,37 @@ export class SessionService {
 			throw new UnauthorizedException('Invalid credentials')
 		}
 
+		/** NOTE: Email verification is currently disabled
+		if (!user.isEmailVerified) {
+			await this.verificationService.sendVerificationToken(user)
+
+			throw new BadRequestException(
+				'Email is not verified. Please, check your inbox'
+			) 
+		}
+		*/
+
 		const metadata = getSessionMetadata(req, userAgent)
 
+		console.log('Hello from session service')
 		return saveSession(req, user, metadata)
+		// return new Promise((resolve, reject) => {
+		// 	req.session.createdAt = new Date().toISOString()
+		// 	req.session.userId = user.id
+		// 	req.session.metadata = metadata
+
+		// 	req.session.save(err => {
+		// 		if (err) {
+		// 			return reject(
+		// 				new InternalServerErrorException(
+		// 					'Failed to save session'
+		// 				)
+		// 			)
+		// 		}
+
+		// 		resolve(user)
+		// 	})
+		// })
 	}
 
 	public async logout(req: Request) {

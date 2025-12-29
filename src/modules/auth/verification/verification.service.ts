@@ -5,8 +5,9 @@ import {
 } from '@nestjs/common'
 import { Request } from 'express'
 
-import { TokenType } from '@/prisma/generated'
+import { TokenType, User } from '@/prisma/generated'
 import { PrismaService } from '@/src/core/prisma/prisma.service'
+import { generateToken } from '@/src/shared/utils/generate-token.util'
 import { getSessionMetadata } from '@/src/shared/utils/session-metadata.util'
 import { saveSession } from '@/src/shared/utils/session.util'
 
@@ -62,5 +63,22 @@ export class VerificationService {
 		const metadata = getSessionMetadata(req, userAgent)
 
 		return saveSession(req, user, metadata)
+	}
+
+	public async sendVerificationToken(user: User) {
+		/**		const verificationToken = */ await generateToken(
+			this.prismaService,
+			user,
+			TokenType.EMAIL_VERIFY,
+			true
+		)
+		console.log('hello, from verification service')
+
+		// await this.mailService.sendVerificationMail(
+		// 	user.email,
+		// 	verificationToken.token
+		// )
+
+		return true
 	}
 }
