@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
+// eslint-disable-next-line prettier/prettier
 import { ValidationPipe } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
+// eslint-disable-next-line prettier/prettier
 import * as cookieParser from 'cookie-parser'
+import 'dotenv/config'
 import * as session from 'express-session'
 
 import { CoreModule } from './core/core.module'

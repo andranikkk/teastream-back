@@ -3,23 +3,23 @@ import {
 	Injectable,
 	NotFoundException
 } from '@nestjs/common'
+import { TokenType, User } from '@prisma/client'
 import { Request } from 'express'
 
-import { TokenType, User } from '@/prisma/generated'
 import { PrismaService } from '@/src/core/prisma/prisma.service'
 import { generateToken } from '@/src/shared/utils/generate-token.util'
 import { getSessionMetadata } from '@/src/shared/utils/session-metadata.util'
 import { saveSession } from '@/src/shared/utils/session.util'
 
-import { MailService } from '../../libs/mail/mail.service'
+// import { MailService } from '../../libs/mail/mail.service'
 
 import { VerificationInput } from './inputs/verification.input'
 
 @Injectable()
 export class VerificationService {
 	public constructor(
-		private readonly prismaService: PrismaService,
-		private readonly mailService: MailService
+		private readonly prismaService: PrismaService
+		// private readonly mailService: MailService
 	) {}
 
 	public async verify(
@@ -27,14 +27,38 @@ export class VerificationService {
 		input: VerificationInput,
 		userAgent: string
 	) {
-		const { token } = input
+		const user = await this.confirmEmailByToken(input.token)
 
+		const metadata = getSessionMetadata(req, userAgent)
+
+		return saveSession(req, user, metadata)
+	}
+
+	public async sendVerificationToken(user: User) {
+		const verificationToken = await generateToken(
+			this.prismaService,
+			user,
+			TokenType.EMAIL_VERIFY
+		)
+
+		// await this.mailService.sendVerificationMail(
+		// 	user.email,																	     /** COMMENTED TO AVOID EMAIL VERIFICATION */
+		// 	verificationToken.token
+		// )
+
+		await this.confirmEmailByToken(verificationToken.token)
+
+		return true
+	}
+
+	private async confirmEmailByToken(token: string) {
 		const existingToken = await this.prismaService.token.findUnique({
 			where: {
 				token,
 				type: TokenType.EMAIL_VERIFY
 			}
 		})
+
 		if (!existingToken) {
 			throw new NotFoundException('Verification token not found')
 		}
@@ -60,25 +84,6 @@ export class VerificationService {
 			}
 		})
 
-		const metadata = getSessionMetadata(req, userAgent)
-
-		return saveSession(req, user, metadata)
-	}
-
-	public async sendVerificationToken(user: User) {
-		/**		const verificationToken = */ await generateToken(
-			this.prismaService,
-			user,
-			TokenType.EMAIL_VERIFY,
-			true
-		)
-		console.log('hello, from verification service')
-
-		// await this.mailService.sendVerificationMail(
-		// 	user.email,
-		// 	verificationToken.token
-		// )
-
-		return true
+		return user
 	}
 }

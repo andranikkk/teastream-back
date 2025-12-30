@@ -1,13 +1,13 @@
+import { TokenType, type User } from '@prisma/client'
 import { v4 as uuidv4 } from 'uuid'
 
-import { TokenType, type User } from '@/prisma/generated'
 import type { PrismaService } from '@/src/core/prisma/prisma.service'
 
 export async function generateToken(
 	prismaService: PrismaService,
 	user: User,
 	type: TokenType,
-	isUUID: boolean = false
+	isUUID: boolean = true
 ) {
 	let token: string
 

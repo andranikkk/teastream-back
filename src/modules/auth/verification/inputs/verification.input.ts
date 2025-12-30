@@ -6,5 +6,5 @@ export class VerificationInput {
 	@Field(() => String)
 	@IsUUID('4')
 	@IsNotEmpty()
-	token: string
+	public token: string
 }

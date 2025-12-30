@@ -1,8 +1,7 @@
 import { InternalServerErrorException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import type { User } from '@prisma/client'
 import type { Request } from 'express'
-
-import type { User } from '@/prisma/generated'
 
 import type { SessionMetadata } from '../types/session-metadata.types'
 
@@ -22,6 +21,8 @@ export function saveSession(
 					new InternalServerErrorException('Failed to save session')
 				)
 			}
+
+			resolve(user)
 		})
 	})
 }

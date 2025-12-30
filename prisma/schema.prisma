@@ -1,11 +1,10 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "./generated"
+  provider = "prisma-client-js" // default
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRES_URI")
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -50,6 +49,7 @@ model Token {
 
 enum TokenType {
   EMAIL_VERIFY
+  PASSWORD_RESET
 
   @@map("token_types")
 }

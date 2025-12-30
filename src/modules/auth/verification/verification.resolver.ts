@@ -1,7 +1,7 @@
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql'
 
 import { UserAgent } from '@/src/shared/decorators/user-agent.decorator'
-import { GqlContext } from '@/src/shared/types/gql-context.types'
+import type { GqlContext } from '@/src/shared/types/gql-context.types'
 
 import { UserModel } from '../account/models/user.model'
 

@@ -1,8 +1,8 @@
 import {
+	BadRequestException,
 	// BadRequestException,
 	ConflictException,
 	Injectable,
-	InternalServerErrorException,
 	NotFoundException,
 	UnauthorizedException
 } from '@nestjs/common'
@@ -93,37 +93,19 @@ export class SessionService {
 			throw new UnauthorizedException('Invalid credentials')
 		}
 
-		/** NOTE: Email verification is currently disabled
+		// /** NOTE: Email verification is currently disabled
 		if (!user.isEmailVerified) {
 			await this.verificationService.sendVerificationToken(user)
 
 			throw new BadRequestException(
 				'Email is not verified. Please, check your inbox'
-			) 
+			)
 		}
-		*/
+		// */
 
 		const metadata = getSessionMetadata(req, userAgent)
 
-		console.log('Hello from session service')
 		return saveSession(req, user, metadata)
-		// return new Promise((resolve, reject) => {
-		// 	req.session.createdAt = new Date().toISOString()
-		// 	req.session.userId = user.id
-		// 	req.session.metadata = metadata
-
-		// 	req.session.save(err => {
-		// 		if (err) {
-		// 			return reject(
-		// 				new InternalServerErrorException(
-		// 					'Failed to save session'
-		// 				)
-		// 			)
-		// 		}
-
-		// 		resolve(user)
-		// 	})
-		// })
 	}
 
 	public async logout(req: Request) {
