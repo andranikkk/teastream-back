@@ -22,7 +22,7 @@ export class NewPasswordInput {
 	@IsNotEmpty()
 	@MinLength(8)
 	@Validate(IsPasswordMatchingConstraint)
-	public passwordRepeat: string
+	public newPasswordRepeat: string
 
 	@Field(() => String)
 	@IsUUID('4')

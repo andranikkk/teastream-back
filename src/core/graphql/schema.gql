@@ -44,7 +44,7 @@ type Mutation {
 
 input NewPasswordInput {
   newPassword: String!
-  passwordRepeat: String!
+  newPasswordRepeat: String!
   token: String!
 }
 

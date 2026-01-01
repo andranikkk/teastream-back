@@ -40,13 +40,9 @@ export class PasswordRecoveryService {
 			)
 		}
 
-		const resetToken = await generateToken(
-			this.prismaService,
-			user,
-			TokenType.PASSWORD_RESET
-		)
+		await generateToken(this.prismaService, user, TokenType.PASSWORD_RESET)
 
-		const metadata = getSessionMetadata(req, userAgent)
+		getSessionMetadata(req, userAgent)
 
 		return true
 	}
@@ -77,5 +73,7 @@ export class PasswordRecoveryService {
 		await this.prismaService.token.delete({
 			where: { id: existingToken.id, type: TokenType.PASSWORD_RESET }
 		})
+
+		return true
 	}
 }
