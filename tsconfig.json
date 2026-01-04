@@ -1,5 +1,7 @@
 {
 	"compilerOptions": {
+		"jsx": "react-jsx",
+
 		"module": "commonjs",
 		"declaration": true,
 		"removeComments": true,
@@ -21,7 +23,6 @@
 		"noImplicitAny": false,
 		"strictBindCallApply": false,
 		"forceConsistentCasingInFileNames": false,
-		"noFallthroughCasesInSwitch": false,
-		"jsx": "react"
+		"noFallthroughCasesInSwitch": false
 	}
 }
