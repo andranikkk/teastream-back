@@ -40,7 +40,19 @@ export class PasswordRecoveryService {
 			)
 		}
 
-		await generateToken(this.prismaService, user, TokenType.PASSWORD_RESET)
+		/** const passwordResetToken = */ await generateToken(
+			this.prismaService,
+			user,
+			TokenType.PASSWORD_RESET
+		)
+
+		/** const metadata = */ getSessionMetadata(req, userAgent)
+
+		// await this.mailService.sendPasswordResetMail(
+		// 	user.email, 																		/** COMMENTED TO AVOID EMAIL VERIFICATION */
+		// 	passwordResetToken.token,
+		// 	metadata
+		// )
 
 		getSessionMetadata(req, userAgent)
 

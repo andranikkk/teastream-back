@@ -1,5 +1,4 @@
 /* eslint-disable prettier/prettier */
-import * as React from 'react'
 import { Html } from '@react-email/html'
 import { Body, Head, Heading, Link, Preview, Section, Tailwind, Text } from '@react-email/components'
 
@@ -26,7 +25,10 @@ export function VerificationTemplate({domain, token}: VerificationTemplateProps)
           <Section className='text-center mt-8'>
             <Text className='text-gray-600'>
               Если вы не регистрировались на нашем сайте, просто проигнорируйте это письмо.
-              Если у вас есть вопросы, свяжитесь с нашей службой поддержки <Link href='mailto:help@teastream.ru' className='text-[#18B9AE] underline'>mailto:help@teastream.ru.</Link> Спасибо!
+              Если у вас есть вопросы, свяжитесь с нашей службой поддержки 
+              <Link href='mailto:help@teastream.ru' className='text-[#18B9AE] underline'>
+                mailto:help@teastream.ru
+              </Link> Спасибо!
             </Text>
           </Section>
         </Body>
