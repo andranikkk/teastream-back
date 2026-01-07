@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-// eslint-disable-next-line prettier/prettier
 import { ValidationPipe } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
-// eslint-disable-next-line prettier/prettier
 import * as cookieParser from 'cookie-parser'
 import 'dotenv/config'
 import * as session from 'express-session'
+
+// import * as graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js'
 
 import { CoreModule } from './core/core.module'
 import { RedisService } from './core/redis/redis.service'
@@ -24,6 +24,8 @@ async function bootstrap() {
 	const RedisStore = connectRedis(session)
 
 	app.use(cookieParser(config.getOrThrow<string>('COOKIE_SECRET')))
+	// app.use(config.getOrThrow<string>('GRAPHQL_PREFIX'), graphqlUploadExpress())
+
 	app.useGlobalPipes(new ValidationPipe({ transform: true }))
 
 	app.use(
