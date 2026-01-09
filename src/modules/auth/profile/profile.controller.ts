@@ -4,6 +4,7 @@ import { User } from '@prisma/client'
 
 import { AuthDecoration } from '@/src/shared/decorators/auth.decorator'
 import { Authorized } from '@/src/shared/decorators/authorized.decorator'
+import { FileValidationPipe } from '@/src/shared/pipes/file-validation.pipe'
 
 import { ProfileService } from './profile.service'
 
@@ -16,7 +17,8 @@ export class ProfileController {
 	@UseInterceptors(FileInterceptor('avatar'))
 	async changeAvatar(
 		@Authorized() user: User,
-		@UploadedFile() file: Express.Multer.File
+		@UploadedFile(FileValidationPipe)
+		file: Express.Multer.File
 	) {
 		return this.profileService.changeAvatar(user, file)
 	}

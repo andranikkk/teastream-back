@@ -1,41 +1,29 @@
-import {
-	type ArgumentMetadata,
-	BadRequestException,
-	Injectable,
-	type PipeTransform
-} from '@nestjs/common'
-import { ReadStream } from 'fs'
-
-import { validateFileFormat, validateFileSize } from '../utils/file.util'
+import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common'
+import type { Express } from 'express'
 
 @Injectable()
-export class FileValidationPipe implements PipeTransform {
-	public async transform(value: any, metadata: ArgumentMetadata) {
-		if (!value.filename) {
+export class FileValidationPipe implements PipeTransform<Express.Multer.File> {
+	transform(file: Express.Multer.File) {
+		if (!file) {
 			throw new BadRequestException('File is not loaded')
 		}
 
-		const { filename, createReadStream } = value
+		const allowedMimeTypes = [
+			'image/jpeg',
+			'image/jpg',
+			'image/webp',
+			'image/gif'
+		]
 
-		const fileStream = createReadStream() as ReadStream
-
-		const allowedFormats = ['jpeg', 'jpg', 'webp', 'gif']
-
-		const isFileFormatValid = validateFileFormat(filename, allowedFormats)
-
-		if (!isFileFormatValid) {
+		if (!allowedMimeTypes.includes(file.mimetype)) {
 			throw new BadRequestException('File format is not supported')
 		}
 
-		const isFileSizeValid = await validateFileSize(
-			fileStream,
-			10 * 1024 * 1024
-		)
-
-		if (!isFileSizeValid) {
+		const maxSize = 10 * 1024 * 1024 // 10MB
+		if (file.size > maxSize) {
 			throw new BadRequestException('File size is too large')
 		}
 
-		return value
+		return file
 	}
 }
