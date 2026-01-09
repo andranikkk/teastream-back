@@ -1,4 +1,10 @@
-import { Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common'
+import {
+	Controller,
+	Delete,
+	Post,
+	UploadedFile,
+	UseInterceptors
+} from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { User } from '@prisma/client'
 
@@ -24,6 +30,7 @@ export class ProfileController {
 	}
 
 	@AuthDecoration()
+	@Delete('avatar')
 	async removeAvatar(@Authorized() user: User) {
 		return this.profileService.removeAvatar(user)
 	}

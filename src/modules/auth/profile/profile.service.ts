@@ -54,10 +54,14 @@ export class ProfileService {
 
 	public async removeAvatar(user: User) {
 		if (!user.avatar) {
-			return
+			return true
 		}
 
-		await this.storageService.remove(user.avatar)
+		const key = user.avatar.startsWith('/')
+			? user.avatar.slice(1)
+			: user.avatar
+
+		await this.storageService.remove(key)
 
 		await this.prismaService.user.update({
 			where: { id: user.id },
