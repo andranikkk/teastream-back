@@ -2,8 +2,10 @@ import {
 	Body,
 	Controller,
 	Delete,
+	Param,
 	Patch,
 	Post,
+	Put,
 	UploadedFile,
 	UseInterceptors
 } from '@nestjs/common'
@@ -15,6 +17,10 @@ import { Authorized } from '@/src/shared/decorators/authorized.decorator'
 import { FileValidationPipe } from '@/src/shared/pipes/file-validation.pipe'
 
 import { ChangeProfileInfoInput } from './inputs/change-profile-info.input'
+import {
+	SocialLinkInput,
+	SocialLinkOrderInput
+} from './inputs/social-link.input'
 import { ProfileService } from './profile.service'
 
 @Controller('profile')
@@ -45,5 +51,35 @@ export class ProfileController {
 		@Body() input: ChangeProfileInfoInput
 	) {
 		return this.profileService.changeInfo(user, input)
+	}
+
+	@AuthDecoration()
+	@Post('social-link')
+	async createSocialLink(
+		@Authorized() user: User,
+		@Body() input: SocialLinkInput
+	) {
+		return this.profileService.createSocialLink(user, input)
+	}
+
+	@AuthDecoration()
+	@Put('social-link/order')
+	async reorderSocialLinks(@Body() input: SocialLinkOrderInput[]) {
+		return this.profileService.reorderSocialLinks(input)
+	}
+
+	@AuthDecoration()
+	@Patch('social-link/:id')
+	async updateSocialLink(
+		@Param('id') id: string,
+		@Body() input: SocialLinkInput
+	) {
+		return this.profileService.updateSocialLink(id, input)
+	}
+
+	@AuthDecoration()
+	@Delete('social-link/:id')
+	async removeSocialLink(@Param('id') id: string) {
+		return this.profileService.removeSocialLink(id)
 	}
 }

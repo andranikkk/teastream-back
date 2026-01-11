@@ -154,7 +154,7 @@ export class ProfileService {
 		return true
 	}
 
-	public async remove(id: string) {
+	public async removeSocialLink(id: string) {
 		await this.prismaService.socialLink.delete({
 			where: { id }
 		})
