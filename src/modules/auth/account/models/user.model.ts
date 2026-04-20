@@ -1,6 +1,10 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql'
 import type { User } from '@prisma/client'
 
+import { StreamModel } from '@/src/modules/stream/models/stream.model'
+
+import { SocialLinkModel } from '../../profile/models/social-link.model'
+
 @ObjectType()
 export class UserModel implements User {
 	@Field(() => ID)
@@ -41,6 +45,12 @@ export class UserModel implements User {
 
 	@Field(() => String, { nullable: true })
 	totpSecret: string
+
+	@Field(() => [SocialLinkModel])
+	socialLinks: SocialLinkModel[]
+
+	@Field(() => StreamModel)
+	stream: StreamModel
 
 	@Field(() => Date)
 	createdAt: Date

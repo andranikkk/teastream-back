@@ -4,7 +4,7 @@ import {
 	Injectable
 } from '@nestjs/common'
 import type { User } from '@prisma/client'
-import * as sharp from 'sharp'
+import sharp from 'sharp'
 
 import { PrismaService } from '@/src/core/prisma/prisma.service'
 
@@ -95,6 +95,19 @@ export class ProfileService {
 		})
 
 		return true
+	}
+
+	public async findSocialLinks(user: User) {
+		const socialLinks = await this.prismaService.socialLink.findMany({
+			where: {
+				userId: user.id
+			},
+			orderBy: {
+				position: 'asc'
+			}
+		})
+
+		return socialLinks
 	}
 
 	public async createSocialLink(user: User, input: SocialLinkInput) {

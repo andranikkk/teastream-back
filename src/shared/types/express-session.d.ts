@@ -1,3 +1,4 @@
+/// <reference types="multer" />
 import 'express-session'
 
 import type { SessionMetadata } from './session-metadata.types'

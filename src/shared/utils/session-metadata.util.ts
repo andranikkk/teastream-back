@@ -34,8 +34,8 @@ export function getSessionMetadata(
 		},
 		device: {
 			browser: device.client.name || 'Unknown',
-			os: device.os.name || 'Unknown',
-			type: device.device.type || 'Unknown'
+			os: /** device.os.name */ 'Unknown', // currently removed due to permissions on Elitebook
+			type: /** device.device.type */ 'Unknown' // currently removed due to permissions on Elitebook
 		},
 		ip: ip || 'Unknown'
 	}

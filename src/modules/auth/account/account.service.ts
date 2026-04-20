@@ -18,7 +18,10 @@ export class AccountService {
 
 	public async me(id: string) {
 		const user = await this.prismaService.user.findUnique({
-			where: { id }
+			where: { id },
+			include: {
+				socialLinks: true
+			}
 		})
 
 		return user
@@ -50,7 +53,12 @@ export class AccountService {
 				username,
 				email,
 				password: await hash(password),
-				displayName: username
+				displayName: username,
+				streams: {
+					create: {
+						title: `${username}'s stream`
+					}
+				}
 			}
 		})
 

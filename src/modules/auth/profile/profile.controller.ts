@@ -2,6 +2,7 @@ import {
 	Body,
 	Controller,
 	Delete,
+	Get,
 	Param,
 	Patch,
 	Post,
@@ -21,6 +22,7 @@ import {
 	SocialLinkInput,
 	SocialLinkOrderInput
 } from './inputs/social-link.input'
+import { SocialLinkModel } from './models/social-link.model'
 import { ProfileService } from './profile.service'
 
 @Controller('profile')
@@ -51,6 +53,14 @@ export class ProfileController {
 		@Body() input: ChangeProfileInfoInput
 	) {
 		return this.profileService.changeInfo(user, input)
+	}
+
+	@AuthDecoration()
+	@Get('social-link')
+	async findSocialLinks(
+		@Authorized() user: User
+	): Promise<SocialLinkModel[]> {
+		return this.profileService.findSocialLinks(user)
 	}
 
 	@AuthDecoration()
