@@ -1,5 +1,8 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import type { Prisma, User } from '@prisma/client'
+import { AccessToken } from 'livekit-server-sdk'
+// import Upload from 'graphql-upload/Upload.mjs'
 import sharp from 'sharp'
 
 import { PrismaService } from '@/src/core/prisma/prisma.service'
@@ -8,11 +11,13 @@ import { StorageService } from '../libs/storage/storage.service'
 
 import { ChangeStreamInfoInput } from './inputs/change-stream-info.input'
 import { FiltersInput } from './inputs/filters.input'
+import { GenerateStreamTokenInput } from './inputs/generate-stream-token.input'
 
 @Injectable()
 export class StreamService {
 	public constructor(
 		private readonly prismaService: PrismaService,
+		private readonly configService: ConfigService,
 		private readonly storageService: StorageService
 	) {}
 
@@ -90,28 +95,62 @@ export class StreamService {
 		return true
 	}
 
-	public async changeThumbnail(user: User, file: Express.Multer.File) {
+	public async changeThumbnail(user: User, file: any) {
 		const stream = await this.findByUserId(user)
 
 		if (stream.thumbnailUrl) {
 			await this.storageService.remove(stream.thumbnailUrl)
 		}
 
+		const chunks: Buffer[] = []
+
+		for await (const chunk of file.createReadStream()) {
+			chunks.push(chunk)
+		}
+
+		const buffer = Buffer.concat(chunks)
+
 		const fileName = `streams/${user.username}.webp`
 
-		const isGif = file.mimetype === 'image/gif'
+		if (file.fileName && file.fileName.endWith('.gif')) {
+			const processedBuffer = await sharp(buffer, { animated: true })
+				.resize(1920, 1080)
+				.webp()
+				.toBuffer()
 
-		const sharpInstance = sharp(file.buffer, {
-			animated: isGif
-		}).resize(1920, 1080)
+			await this.storageService.upload(
+				processedBuffer,
+				fileName,
+				'image/webp'
+			)
+		} else {
+			const processedBuffer = await sharp(buffer)
+				.resize(1920, 1080)
+				.webp()
+				.toBuffer()
 
-		const processedBuffer = await sharpInstance.webp().toBuffer()
+			await this.storageService.upload(
+				processedBuffer,
+				fileName,
+				'image/webp'
+			)
+		}
 
-		await this.storageService.upload(
-			processedBuffer,
-			fileName,
-			'image/webp'
-		)
+		// const fileName = `streams/${user.username}.webp`
+
+		// const isGif = file.mimetype === 'image/gif'
+
+		// const sharpInstance = sharp(file.buffer, {
+		// 	animated: isGif
+		// }).resize(1920, 1080)
+
+		// const processedBuffer = await sharpInstance.webp().toBuffer()
+
+		// await this.storageService.upload(
+		// 	processedBuffer,
+		// 	fileName,
+		// 	'image/webp'
+		// )
 
 		await this.prismaService.stream.update({
 			where: { userId: user.id },
@@ -140,6 +179,55 @@ export class StreamService {
 		})
 
 		return true
+	}
+
+	public async generateToken(input: GenerateStreamTokenInput) {
+		const { userId, channelId } = input
+
+		let self: { id: string; username: string }
+
+		const user = await this.prismaService.user.findUnique({
+			where: { id: userId }
+		})
+
+		if (user) {
+			self = { id: user.id, username: user.username }
+		} else {
+			self = {
+				id: userId,
+				username: `Guest №${Math.floor(Math.random() * 1000000)}`
+			}
+		}
+
+		const channel = await this.prismaService.user.findUnique({
+			where: {
+				id: channelId
+			}
+		})
+
+		if (!channel) {
+			throw new NotFoundException('Channel not found')
+		}
+
+		const isHost = self.id === channel.id
+
+		const token = new AccessToken(
+			this.configService.getOrThrow<string>('LIVEKIT_API_KEY'),
+			this.configService.getOrThrow<string>('LIVEKIT_API_SECRET'),
+			{
+				identity: isHost ? `Host-${self.id}` : self.id.toString(),
+				name: self.username
+			}
+		)
+
+		token.addGrant({
+			room: channel.id,
+			roomJoin: true,
+			canPublish: false
+			// canPublishData: true //** no need */
+		})
+
+		return { token: token.toJwt() }
 	}
 
 	private async findByUserId(user: User) {
