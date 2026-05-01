@@ -28,10 +28,16 @@ model User {
   isTotpEnabled Boolean @default(false) @map("is_totp_enabled")
   totpSecret    String? @map("totp_secret")
 
-  tokens       Token[]
-  socialLinks  SocialLink[]
-  streams      Stream?
+  tokens Token[]
+
+  socialLinks SocialLink[]
+
+  streams Stream?
+
   chatMessages ChatMessage[]
+
+  follower  Follow[] @relation("follower")
+  following Follow[] @relation("following")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -132,6 +138,24 @@ model Category {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("categories")
+}
+
+model Follow {
+  id String @id @default(uuid())
+
+  follower   User   @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+  followerId String @map("follower_id")
+
+  following   User   @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+  followingId String @map("following_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+  @@map("follows")
 }
 
 enum TokenType {
