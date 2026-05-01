@@ -3,6 +3,7 @@ import type { Stream } from '@prisma/client'
 
 import { UserModel } from '../../auth/account/models/user.model'
 import { CategoryModel } from '../../category/models/category.model'
+import { ChatMessageModel } from '../../chat/models/chat-message.model'
 
 @ObjectType()
 export class StreamModel implements Stream {
@@ -27,6 +28,15 @@ export class StreamModel implements Stream {
 	@Field(() => Boolean)
 	isLive: boolean
 
+	@Field(() => Boolean)
+	isChatEnabled: boolean
+
+	@Field(() => Boolean)
+	isChatFollowersOnly: boolean
+
+	@Field(() => Boolean)
+	isChatPremiumFollowersOnly: boolean
+
 	@Field(() => UserModel)
 	user: UserModel
 
@@ -38,6 +48,9 @@ export class StreamModel implements Stream {
 
 	@Field(() => String)
 	categoryId: string
+
+	@Field(() => [ChatMessageModel])
+	chatMessages: ChatMessageModel[]
 
 	@Field(() => Date)
 	createdAt: Date
