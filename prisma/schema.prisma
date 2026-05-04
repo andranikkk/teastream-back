@@ -19,6 +19,8 @@ model User {
   avatar String?
   bio    String?
 
+  telegramId String? @map("telegram_id")
+
   isVerified      Boolean @default(false) @map("is_verified")
   isEmailVerified Boolean @default(false) @map("is_email_verified")
 
@@ -28,16 +30,14 @@ model User {
   isTotpEnabled Boolean @default(false) @map("is_totp_enabled")
   totpSecret    String? @map("totp_secret")
 
-  tokens Token[]
-
-  socialLinks SocialLink[]
-
-  streams Stream?
-
-  chatMessages ChatMessage[]
-
-  follower  Follow[] @relation("follower")
-  following Follow[] @relation("following")
+  tokens               Token[]
+  socialLinks          SocialLink[]
+  streams              Stream?
+  chatMessages         ChatMessage[]
+  follower             Follow[]              @relation("follower")
+  following            Follow[]              @relation("following")
+  notifications        Notification[]
+  notificationSettings NotificationSettings?
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -59,6 +59,37 @@ model SocialLink {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("social_links")
+}
+
+model Notification {
+  id String @id @default(uuid())
+
+  type    NotificationType
+  message String
+  isRead  Boolean          @default(false) @map("is_read")
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String? @map("user_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("notifications")
+}
+
+model NotificationSettings {
+  id String @id @default(uuid())
+
+  siteNotifications     Boolean @default(true) @map("site_notifications")
+  telegramNotifications Boolean @default(true) @map("telegram_notifications")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique @map("user_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("notification_settings")
 }
 
 model Token {
@@ -162,6 +193,17 @@ enum TokenType {
   EMAIL_VERIFY
   PASSWORD_RESET
   DEACTIVATE_ACCOUNT
+  TELEGRAM_AUTH
 
   @@map("token_types")
+}
+
+enum NotificationType {
+  STREAM_START
+  NEW_FOLLOWER
+  NEW_SPONSORSHIP
+  ENABLE_TWO_FACTOR
+  VERIFIED_CHANNEL
+
+  @@map("notification_types")
 }

@@ -18,8 +18,12 @@ async function main() {
 			prisma.user.deleteMany(),
 			prisma.socialLink.deleteMany(),
 			prisma.stream.deleteMany(),
-			prisma.category.deleteMany()
+			prisma.category.deleteMany(),
+			prisma.notification.deleteMany(),
+			prisma.notificationSettings.deleteMany()
 		])
+
+		// TODO: create seeder for notifications and notification settings
 
 		const categoriesData = [
 			{
