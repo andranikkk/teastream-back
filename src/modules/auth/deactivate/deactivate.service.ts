@@ -14,6 +14,7 @@ import { getSessionMetadata } from '@/src/shared/utils/session-metadata.util'
 import { destroySession } from '@/src/shared/utils/session.util'
 
 import { MailService } from '../../libs/mail/mail.service'
+import { TelegramService } from '../../libs/telegram/telegram.service'
 
 import { DeactivateAccountInput } from './inputs/deactivate-account.input'
 
@@ -22,7 +23,8 @@ export class DeactivateService {
 	public constructor(
 		private readonly prismaService: PrismaService,
 		private readonly configService: ConfigService,
-		private readonly mailService: MailService
+		private readonly mailService: MailService,
+		private readonly telegramService: TelegramService
 	) {}
 
 	public async deactivate(
@@ -89,20 +91,36 @@ export class DeactivateService {
 		user: User,
 		userAgent: string
 	) {
-		/** const deactivationToken = */ await generateToken(
+		const deactivationToken = await generateToken(
 			this.prismaService,
 			user,
 			TokenType.DEACTIVATE_ACCOUNT,
 			false
 		)
 
-		/** const metadata = */ getSessionMetadata(req, userAgent)
+		const metadata = getSessionMetadata(req, userAgent)
 
 		// await this.mailService.sendDeactivateMail(
 		// 	user.email,
 		// 	deactivationToken.token,                    /** COMMENTED TO AVOID EMAIL VERIFICATION */
 		// 	metadata
 		// )
+
+		if (
+			deactivationToken.user.notificationSettings
+				?.telegramNotifications &&
+			deactivationToken.user.telegramId
+		) {
+			await this.telegramService.sendDeactivateToken(
+				deactivationToken.user.telegramId,
+				deactivationToken.token,
+				metadata
+			)
+
+			await this.telegramService.sendAccountDeletedMessage(
+				deactivationToken.user.telegramId
+			)
+		}
 
 		return true
 	}

@@ -13,6 +13,7 @@ import { generateToken } from '@/src/shared/utils/generate-token.util'
 import { getSessionMetadata } from '@/src/shared/utils/session-metadata.util'
 
 import { MailService } from '../../libs/mail/mail.service'
+import { TelegramService } from '../../libs/telegram/telegram.service'
 
 import { NewPasswordInput } from './inputs/new-password.input'
 import { ResetPasswordInput } from './inputs/reset-password.input'
@@ -21,7 +22,8 @@ import { ResetPasswordInput } from './inputs/reset-password.input'
 export class PasswordRecoveryService {
 	public constructor(
 		private readonly prismaService: PrismaService,
-		private readonly mailService: MailService
+		private readonly mailService: MailService,
+		private readonly telegramService: TelegramService
 	) {}
 
 	public async resetPassword(
@@ -32,7 +34,12 @@ export class PasswordRecoveryService {
 		const { email } = input
 
 		const user = await this.prismaService.user.findUnique({
-			where: { email }
+			where: {
+				email
+			},
+			include: {
+				notificationSettings: true
+			}
 		})
 		if (!user) {
 			throw new NotAcceptableException(
@@ -40,13 +47,13 @@ export class PasswordRecoveryService {
 			)
 		}
 
-		/** const passwordResetToken = */ await generateToken(
+		const passwordResetToken = await generateToken(
 			this.prismaService,
 			user,
 			TokenType.PASSWORD_RESET
 		)
 
-		/** const metadata = */ getSessionMetadata(req, userAgent)
+		const metadata = getSessionMetadata(req, userAgent)
 
 		// await this.mailService.sendPasswordResetMail(
 		// 	user.email, 																		/** COMMENTED TO AVOID EMAIL VERIFICATION */
@@ -54,7 +61,17 @@ export class PasswordRecoveryService {
 		// 	metadata
 		// )
 
-		getSessionMetadata(req, userAgent)
+		if (
+			passwordResetToken.user.notificationSettings
+				.telegramNotifications &&
+			passwordResetToken.user.telegramId
+		) {
+			await this.telegramService.sendPasswordResetToken(
+				passwordResetToken.user.telegramId,
+				passwordResetToken.token,
+				metadata
+			)
+		}
 
 		return true
 	}
