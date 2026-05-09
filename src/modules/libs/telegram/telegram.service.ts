@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { TokenType, User } from '@prisma/client'
+import { type SponsorshipPlan, TokenType, type User } from '@prisma/client'
 import { Action, Command, Ctx, Start, Update } from 'nestjs-telegraf'
 import { Context, Telegraf } from 'telegraf'
 
@@ -157,6 +157,20 @@ export class TelegramService extends Telegraf {
 		await this.telegram.sendMessage(
 			chatId,
 			MESSAGES.newFollower(follower, user.follower.length),
+			{
+				parse_mode: 'HTML'
+			}
+		)
+	}
+
+	public async sendNewSponsorship(
+		chatId: string,
+		plan: SponsorshipPlan,
+		sponsor: User
+	) {
+		await this.telegram.sendMessage(
+			chatId,
+			MESSAGES.newSponsorship(plan, sponsor),
 			{
 				parse_mode: 'HTML'
 			}

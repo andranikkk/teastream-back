@@ -1,6 +1,6 @@
-import type { User } from '@prisma/client'
+import type { SponsorshipPlan, User } from '@prisma/client'
 
-import { SessionMetadata } from '@/src/shared/types/session-metadata.types'
+import type { SessionMetadata } from '@/src/shared/types/session-metadata.types'
 
 export const MESSAGES = {
 	welcome:
@@ -47,5 +47,10 @@ export const MESSAGES = {
 		`<b>New follower alert!</b>\n\n` +
 		`You have a new follower: @${follower.displayName}\n` +
 		`Your follower count: ${followerCount}\n\n` +
-		`Check out their profile: <a href='https://teastream.ru/${follower.username}'>View Profile</a>`
+		`Check out their profile: <a href='https://teastream.ru/${follower.username}'>View Profile</a>`,
+	newSponsorship: (plan: SponsorshipPlan, sponsor: User) =>
+		`<b>New sponsorship alert!</b>\n\n` +
+		`You have a new sponsorship from @${sponsor.username} for the plan: <b>${plan.title}</b>\n` +
+		`Amount: <b>$${plan.price}</b>\n\n` +
+		`Check out their profile: <a href='https://teastream.ru/${sponsor.username}'>View Profile</a>`
 }

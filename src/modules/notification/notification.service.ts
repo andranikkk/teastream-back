@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import type { User } from '@prisma/client'
+import type { SponsorshipPlan, User } from '@prisma/client'
 import { NotificationType, TokenType } from '@prisma/client'
 
 import { PrismaService } from '@/src/core/prisma/prisma.service'
@@ -43,6 +43,26 @@ export class NotificationService {
 		})
 
 		return notifications
+	}
+
+	public async createNewSponsorship(
+		userId: string,
+		plan: SponsorshipPlan,
+		sponsor: User
+	) {
+		const notification = await this.prismaService.notification.create({
+			data: {
+				message: `<b className='font-medium'>You have a new sponsorship!</b> <p>@${sponsor.displayName} just sponsored you with the plan: ${plan.title} for $${plan.price}!</p>`,
+				type: NotificationType.NEW_SPONSORSHIP,
+				user: {
+					connect: {
+						id: userId
+					}
+				}
+			}
+		})
+
+		return notification
 	}
 
 	public async changeSettings(
