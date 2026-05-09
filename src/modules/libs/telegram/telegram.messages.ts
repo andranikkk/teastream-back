@@ -52,5 +52,13 @@ export const MESSAGES = {
 		`<b>New sponsorship alert!</b>\n\n` +
 		`You have a new sponsorship from @${sponsor.username} for the plan: <b>${plan.title}</b>\n` +
 		`Amount: <b>$${plan.price}</b>\n\n` +
-		`Check out their profile: <a href='https://teastream.ru/${sponsor.username}'>View Profile</a>`
+		`Check out their profile: <a href='https://teastream.ru/${sponsor.username}'>View Profile</a>`,
+	enableTwoFactor:
+		`<b>Make your account more secure!</b>\n\n` +
+		`To enable two-factor authentication, please click the <a href='https://teastream.ru/dashboard/settings'>link</a> and follow the instructions.`,
+	verifyChannel:
+		`<b>Congratulations!</b>\n\n` +
+		`Your channel has been successfully verified and you got a verification badge.\n` +
+		'A verification badge is a symbol of trust and authenticity, showing that your channel is the official presence of your brand.\n' +
+		`Thank you for being a part of our community!`
 }
