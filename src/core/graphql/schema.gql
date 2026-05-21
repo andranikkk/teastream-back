@@ -145,7 +145,7 @@ type Mutation {
   clearSessionCookie: Boolean!
   createIngress(ingressType: Float!): Boolean!
   createPlan(data: CreatePlanInput!): Boolean!
-  createUser(data: CreateUserInput!): Boolean!
+  createUser(data: CreateUserInput!): RegisterResponse!
   deactivateAccount(data: DeactivateAccountInput!): AuthModel!
   disableTotp: Boolean!
   enableTotp(data: EnableTotpInput!): Boolean!
@@ -234,6 +234,11 @@ type Query {
   findSponsorsByChannel(channelId: String!): [SubscriptionModel!]!
   generateTotpSecret: TotpModel!
   unreadNotificationCount: Float!
+}
+
+type RegisterResponse {
+  success: Boolean!
+  token: String!
 }
 
 input ResetPasswordInput {

@@ -8,6 +8,7 @@ import { AccountService } from './account.service'
 import { ChangeEmailInput } from './inputs/change-email.input'
 import { ChangePasswordInput } from './inputs/change-password.input'
 import { CreateUserInput } from './inputs/create-user.input'
+import { RegisterResponse } from './models/auth.model'
 import { UserModel } from './models/user.model'
 
 @Resolver('Account')
@@ -20,7 +21,7 @@ export class AccountResolver {
 		return this.accountService.me(id)
 	}
 
-	@Mutation(() => Boolean, { name: 'createUser' })
+	@Mutation(() => RegisterResponse, { name: 'createUser' })
 	public async create(@Args('data') input: CreateUserInput) {
 		return this.accountService.create(input)
 	}

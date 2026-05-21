@@ -46,9 +46,10 @@ export class VerificationService {
 		// 	verificationToken.token
 		// )
 
-		await this.confirmEmailByToken(verificationToken.token)
+		// await this.confirmEmailByToken(verificationToken.token) /**COMMENTED TO AVOID AUTOMATIC VERIFICATION */
+		console.log('Verification token:', verificationToken.token)
 
-		return true
+		return verificationToken.token
 	}
 
 	private async confirmEmailByToken(token: string) {

@@ -10,3 +10,12 @@ export class AuthModel {
 	@Field(() => String, { nullable: true })
 	public message: string
 }
+
+@ObjectType()
+export class RegisterResponse {
+	@Field()
+	success: boolean
+
+	@Field()
+	token: string
+}

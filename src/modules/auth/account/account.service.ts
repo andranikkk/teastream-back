@@ -62,9 +62,12 @@ export class AccountService {
 			}
 		})
 
-		await this.verificationService.sendVerificationToken(user)
+		const token = await this.verificationService.sendVerificationToken(user)
 
-		return true
+		return {
+			success: true,
+			token
+		}
 	}
 
 	public async changeEmail(user: User, input: ChangeEmailInput) {
