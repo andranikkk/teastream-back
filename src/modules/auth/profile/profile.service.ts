@@ -4,7 +4,6 @@ import {
 	Injectable
 } from '@nestjs/common'
 import type { User } from '@prisma/client'
-import sharp from 'sharp'
 
 import { PrismaService } from '@/src/core/prisma/prisma.service'
 
@@ -15,6 +14,8 @@ import {
 	SocialLinkInput,
 	SocialLinkOrderInput
 } from './inputs/social-link.input'
+
+const sharp = require('sharp')
 
 @Injectable()
 export class ProfileService {
@@ -32,7 +33,7 @@ export class ProfileService {
 			await this.storageService.remove(user.avatar)
 		}
 
-		const fileName = `channels/${user.username}.webp`
+		const fileName = `uploads/${file.originalname}`
 
 		const isGif = file.mimetype === 'image/gif'
 
