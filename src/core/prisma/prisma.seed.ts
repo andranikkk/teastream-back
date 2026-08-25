@@ -63,7 +63,7 @@ async function main() {
 							password: await hash('123123123'),
 							username,
 							displayName: username,
-							avatar: `/channels/${username}.webp`,
+							avatar: `/teastream-record/uploads/${username}`,
 							isEmailVerified: true,
 							socialLinks: {
 								createMany: {
