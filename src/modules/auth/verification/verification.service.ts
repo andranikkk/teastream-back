@@ -31,7 +31,9 @@ export class VerificationService {
 
 		const metadata = getSessionMetadata(req, userAgent)
 
-		return saveSession(req, user, metadata)
+		await saveSession(req, user, metadata)
+
+		return user
 	}
 
 	public async sendVerificationToken(user: User) {

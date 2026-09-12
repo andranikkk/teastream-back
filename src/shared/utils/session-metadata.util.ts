@@ -33,7 +33,7 @@ export function getSessionMetadata(
 			longitude: location.ll[1] || 0
 		},
 		device: {
-			browser: device.client.name || 'Unknown',
+			browser: device.client?.name || 'Unknown',
 			os: /** device.os.name */ 'Unknown', // currently removed due to permissions on Elitebook
 			type: /** device.device.type */ 'Unknown' // currently removed due to permissions on Elitebook
 		},
